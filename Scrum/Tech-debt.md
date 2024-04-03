@@ -16,25 +16,33 @@
 ### Unused imports
 
 There was plenty of unused imports in application code base.
+
 Example of unused imports:
+
 ![unused-imports](https://github.com/octolera/ToDoGotchi/blob/main/Scrum/unused-import.png)
 
 ### Stray 'consloe.log()'
 
 There was a problem with a lot of useless console.log() calls from code debbuging phase.
+
 Example of stray console.log():
+
 ![stray-console-logs](https://github.com/octolera/ToDoGotchi/blob/main/Scrum/stray-logs.png)
 
 ### Function annotation issue
 
 Some functions need some additional js doc annotations.
+
 Example:
+
 ![js-ann](https://github.com/octolera/ToDoGotchi/blob/main/Scrum/js-ann.png)
 
 ### Unused variables, states and functions:
 
 Some variables, states and functions are unsued. So we need to clean some stuff.
+
 Example:
+
 ![unused-var](https://github.com/octolera/ToDoGotchi/blob/main/Scrum/unused-var.png)
 
 ## Absence of automated tests

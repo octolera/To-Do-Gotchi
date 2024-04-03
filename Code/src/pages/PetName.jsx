@@ -28,6 +28,10 @@ function PetName() {
   useIonViewWillLeave(() => {
     setOpacity(0);
   });
+
+  /**
+ * @param {Event} e submit event
+ */
   const submitName = async (e) => {
     e.preventDefault();
     /**@type {string} */

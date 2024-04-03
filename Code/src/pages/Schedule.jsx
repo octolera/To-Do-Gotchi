@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   IonPage,
   useIonViewWillEnter,
-  useIonViewWillLeave,
 } from "@ionic/react";
 import "./common.css";
 import "./Schedule.css";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { set, get } from "../data/IonicStorage";
 
 const monthsRU = [
@@ -51,6 +50,11 @@ function Schedule() {
   const [menuWeekDay, setMenuWeekDay] = useState(0);
   const [repeat, setRepeat] = useState(false);
 
+  /**
+   * 
+   * @param {number} weekd day of week
+   * @param {number} day month day
+   */
   const openMenu = (weekd, day) => {
     setMenuDay(day);
     setMenuWeekDay(weekd);
@@ -63,14 +67,6 @@ function Schedule() {
   const hideDrop = () => {
     setDropVisibility("hidden");
   };
-  const addParam = async () => {
-    await set(currDate.getDate() + "_" + month + "_" + year, [
-      { name: "Проверка", status: "active" },
-    ]);
-    let resp = await get(currDate.getDate() + "_" + month + "_" + year);
-    console.log(resp);
-  };
-
   const getTasks = async () => {
     let len;
     if (month == 1 && year % 4 == 0) {
@@ -83,7 +79,6 @@ function Schedule() {
       let resp = await get(i + "_" + month + "_" + year);
       t.push(resp);
     }
-    console.log(t + " " + monthsRU[month] + " " + year);
     setMonthTasks({ ...t });
   };
   const TaskName = ({ name }) => <div id="text-task-underl">{name}</div>;
@@ -243,7 +238,6 @@ function Schedule() {
       return false;
     }
     const currTasks = await get(menuDay + "_" + month + "_" + year);
-    console.log(currTasks);
     if (currTasks) {
       currTasks.push({ name: input, status: "active" });
       await set(menuDay + "_" + month + "_" + year, currTasks);

@@ -1,6 +1,7 @@
 import { useEffect, Fragment } from "react";
 import { useHistory } from "react-router";
-import { createStore, get, set } from "../data/IonicStorage";
+import {  get, set } from "../data/IonicStorage";
+
 function Fetch() {
   const history = useHistory();
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   IonPage,
   useIonViewWillEnter,
@@ -29,6 +29,11 @@ function Username() {
   useIonViewWillLeave(() => {
     setOpacity(0);
   });
+  /**
+   * 
+   * @param {Event} e some js event
+   * @returns 
+   */
   const submitName = async (e) => {
     e.preventDefault();
     /**@type {string} */

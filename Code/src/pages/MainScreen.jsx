@@ -1,10 +1,10 @@
-import { useMemo, useRef, useState } from "react";
+import {  useRef, useState } from "react";
 import {
   IonPage,
   useIonViewWillEnter,
   useIonViewWillLeave,
 } from "@ionic/react";
-import { set, get } from "../data/IonicStorage";
+import {get } from "../data/IonicStorage";
 import "./MainScreen.css";
 import "./common.css";
 import { useHistory } from "react-router";
@@ -66,6 +66,12 @@ const states = [
     ],
   },
 ];
+
+/**
+ * 
+ * @param {number} health 
+ * @returns {number} index of current pet state
+ */
 const healthToPetState = (health) =>{
   const sortedStates = states.sort((a,b)=> a.threshold > b.threshold);
   for(let i=0;i<sortedStates.length;i++){
@@ -75,9 +81,19 @@ const healthToPetState = (health) =>{
   }
   return 0;
 } 
+/**
+ * 
+ * @param {number} max 
+ * @returns {number} random int in range [0..max)
+ */
 const randomInt = (max) =>{
   return Math.floor(Math.random() * max);
 }
+/**
+ * 
+ * @param {typeof states} weights 
+ * @returns {{threshold: number, animations: {start: number, duration: number, priority: number}[], }} weighted random state
+ */
 const weightedRandom = (weights) => {
   let sum = 0;
   weights.forEach(x => {sum+=x.priority});
@@ -86,6 +102,7 @@ const weightedRandom = (weights) => {
     if(rnd < x.priority) return x;
     rnd -= x.priority;
   }
+  return weights[0];
 }
 let globalBlock =false;
 let globalPetState = 0;
@@ -95,7 +112,6 @@ const MainScreen = () => {
   const [health, setHealth] = useState(10);
   const [petname, setPetname] = useState("");
   const [opacity, setOpacity] = useState(0);
-  const [petState, setPetState] = useState(0);
   const video = useRef();
   const playAnimation = (block=false) =>{
     if(globalBlock && block) return;

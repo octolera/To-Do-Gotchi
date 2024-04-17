@@ -10,7 +10,7 @@
 ## 1 Recognizability
 
 Application wireframe contains recognizable elements. Almost all buttons are named.
-On example lower you can see missused icon buttons. They need to be replaced. #[missuse](https://github.com/octolera/ToDoGotchi/blob/main/WorkReview/assets/ux1.jpg)
+On example lower you can see missused icon buttons. They need to be replaced. #[missuse](https://github.com/octolera/ToDoGotchi/blob/main/WorkReview/assets/ux1.png)
 
 ## 2 Learning ability
 

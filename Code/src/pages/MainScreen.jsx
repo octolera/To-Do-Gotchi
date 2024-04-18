@@ -223,6 +223,7 @@ const MainScreen = () => {
         </div>
         <div id="pet-border">
           <video
+            poster="/assets/pet-static/poster.webp"
             hidden={petOpaciy}
             id="animation"
             autoPlay={true}

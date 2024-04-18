@@ -67,14 +67,6 @@
   flex-direction: row;
 }
 
-#day-card-title {
-  width: 50%;
-  height: 100%;
-  padding-bottom: 5px;
-  padding-top: 5px;
-  font-size: 12pt;
-}
-
 #text-task-underl {
   min-width: 70%;
   height: 100%;

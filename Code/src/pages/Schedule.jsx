@@ -81,12 +81,13 @@ function Schedule() {
     }
     setMonthTasks({ ...t });
   };
+
   const TaskName = ({ name }) => <div id="text-task-underl">{name}</div>;
 
   const DayCard = ({ weekd, day, visibility, tasks, num }) => (
     <div id="day-card">
       <div id="text-card">
-        <div id="day-card-title">
+        <div id="card-title">
           <h1>
             {weekdRU[weekd]}, {day}
           </h1>
@@ -134,7 +135,6 @@ function Schedule() {
   };
   const DayCardList = () => {
     const components = [];
-    const tasks = [];
     let weekDay = new Date(year, month, 0).getDay();
     if (month == 1 && year % 4 == 0) {
       for (var i = 0; i < 29; i++, weekDay++) {
@@ -189,6 +189,7 @@ function Schedule() {
         }
       }
     }
+    console.log(components)
     return (
       <div>
         {components.map((day, index) => (
@@ -239,11 +240,11 @@ function Schedule() {
     }
     const currTasks = await get(menuDay + "_" + month + "_" + year);
     if (currTasks) {
-      currTasks.push({ name: input, status: "active" });
+      currTasks.push({ name: input, status: "active", check: false });
       await set(menuDay + "_" + month + "_" + year, currTasks);
     } else {
       await set(menuDay + "_" + month + "_" + year, [
-        { name: input, status: "active" },
+        { name: input, status: "active", check: false},
       ]);
     }
     setIsUpdated(true);
@@ -374,7 +375,7 @@ function Schedule() {
         <div id="sched-title">
           <h1>Календарь</h1>
         </div>
-        <div id="sched-month">
+        <div id="scroll-top">
           <button id="scroll-button" onClick={sideScrollBack}>
             -
           </button>

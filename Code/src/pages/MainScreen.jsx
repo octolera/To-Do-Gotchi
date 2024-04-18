@@ -142,13 +142,16 @@ const MainScreen = () => {
   useIonViewWillLeave(() => {
     setOpacity(0);
   });
+  //const testClick = () => {
+  //  setHealth((x) => (x >= 100 ? 0 : x + 10));
+  //  globalPetState = healthToPetState(health +10);
+  //  if (health + 10 > 100) {
+  //    history.replace("/death-screen");
+  //  }
+  //};
   const testClick = () => {
-    setHealth((x) => (x >= 100 ? 0 : x + 10));
-    globalPetState = healthToPetState(health +10);
-    if (health + 10 > 100) {
-      history.replace("/death-screen");
-    }
-  };
+    history.push("/tasks");
+  }
 
   return (
     <IonPage id="main-screen">

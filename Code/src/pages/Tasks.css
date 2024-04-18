@@ -33,3 +33,6 @@
     flex-direction: row;
     min-height: 60px;
   }
+#task-button {
+  margin-bottom: 20px;
+}

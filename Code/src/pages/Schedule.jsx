@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   IonPage,
   useIonViewWillEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
 import "./common.css";
 import "./Schedule.css";
-import { Link } from "react-router-dom";
 import { set, get } from "../data/IonicStorage";
 
 const monthsRU = [
@@ -37,7 +37,7 @@ const monthLen = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 function Schedule() {
   const inputRef = useRef();
-  let currDate = new Date();
+  const currDate = new Date();
   const [month, setMonth] = useState(currDate.getMonth());
   const [monthTasks, setMonthTasks] = useState({});
   const [year, setYear] = useState(currDate.getFullYear());
@@ -48,10 +48,11 @@ function Schedule() {
   const [isUpdated, setIsUpdated] = useState(false);
   const [menuDay, setMenuDay] = useState(0);
   const [menuWeekDay, setMenuWeekDay] = useState(0);
-  const [repeat, setRepeat] = useState(false);
+  //const [repeat, setRepeat] = useState(false);
+  const [opacity, setOpacity] = useState(0);
 
   /**
-   * 
+   *
    * @param {number} weekd day of week
    * @param {number} day month day
    */
@@ -72,7 +73,7 @@ function Schedule() {
     if (month == 1 && year % 4 == 0) {
       len = 29;
     } else {
-      len = monthLen[len];
+      len = monthLen[month];
     }
     const t = [];
     for (let i = 1; i <= len; i++) {
@@ -81,12 +82,13 @@ function Schedule() {
     }
     setMonthTasks({ ...t });
   };
+
   const TaskName = ({ name }) => <div id="text-task-underl">{name}</div>;
 
   const DayCard = ({ weekd, day, visibility, tasks, num }) => (
     <div id="day-card">
       <div id="text-card">
-        <div id="day-card-title">
+        <div id="card-title">
           <h1>
             {weekdRU[weekd]}, {day}
           </h1>
@@ -97,44 +99,45 @@ function Schedule() {
             openMenu(weekd, num);
           }}
           style={{ visibility: visibility }}
-          name={num}>
+          name={num}
+        >
           +
         </button>
       </div>
-      {tasks
-        ? tasks.map((task, index) => (
-            <div id="text-card">
-              <TaskName key={index} name={task.name}></TaskName>
-              <button
-                id="edit-button"
-                onClick={() => {
-                  setDropParams({
-                    name: task.name,
-                    ind: index,
-                    day: day,
-                    weekd: weekd,
-                  });
-                  setDropVisibility("visible");
-                }}
-                style={{ visibility: visibility }}
-                name={num}>
-                -
-              </button>
-            </div>
-          ))
-        : null}
+      {tasks?.map((task, index) => (
+        <div style={{ marginTop: "5px" }} key={"task_" + index} id="text-card">
+          <TaskName name={task.name}></TaskName>
+          <button
+            id="edit-button"
+            onClick={() => {
+              setDropParams({
+                name: task.name,
+                ind: index,
+                day: day,
+                weekd: weekd,
+              });
+              setDropVisibility("visible");
+            }}
+            style={{ visibility: visibility }}
+            name={num}
+          >
+            -
+          </button>
+        </div>
+      ))}
     </div>
   );
   const dropTask = async () => {
     const currTasks = await get(dropParams.day + "_" + month + "_" + year);
+    const health = await get("_health");
+    set("_health", health - 2 >= 0 ? health - 2 : 0);
     currTasks.splice(dropParams.ind, 1);
-    await set(dropParams.day + "_" + month + "_" + year, currTasks);
+    set(dropParams.day + "_" + month + "_" + year, currTasks);
     setIsUpdated(true);
     setDropVisibility("hidden");
   };
   const DayCardList = () => {
     const components = [];
-    const tasks = [];
     let weekDay = new Date(year, month, 0).getDay();
     if (month == 1 && year % 4 == 0) {
       for (var i = 0; i < 29; i++, weekDay++) {
@@ -193,7 +196,7 @@ function Schedule() {
       <div>
         {components.map((day, index) => (
           <DayCard
-            key={index}
+            key={`daycard_${index}`}
             weekd={day.weekd}
             day={day.day}
             visibility={day.v}
@@ -204,8 +207,12 @@ function Schedule() {
       </div>
     );
   };
-  useIonViewWillEnter(() => {
+  useIonViewWillEnter(async () => {
     getTasks();
+    setOpacity(1);
+  });
+  useIonViewWillLeave(() => {
+    setOpacity(0);
   });
   const sideScrollForv = async () => {
     if (month >= 11) {
@@ -234,17 +241,24 @@ function Schedule() {
   const submitTask = async (e) => {
     e.preventDefault();
     const input = inputRef.current.value;
-    if (input.length == 0 || input.length > 125) {
+    if (input.length == 0 || input.length > 60) {
       return false;
     }
-    const currTasks = await get(menuDay + "_" + month + "_" + year);
+    const key = menuDay + "_" + month + "_" + year;
+    const currTasks = await get(key);
+    let keys = await get("_keys");
+    if (keys == undefined) {
+      keys = [];
+    }
+    if (!keys.find((el) => el == key)) {
+      keys.push(key);
+      set("_keys", keys);
+    }
     if (currTasks) {
-      currTasks.push({ name: input, status: "active" });
-      await set(menuDay + "_" + month + "_" + year, currTasks);
+      currTasks.push({ name: input, status: "active", check: false });
+      set(key, currTasks);
     } else {
-      await set(menuDay + "_" + month + "_" + year, [
-        { name: input, status: "active" },
-      ]);
+      set(key, [{ name: input, status: "active", check: false }]);
     }
     setIsUpdated(true);
     hideMenu();
@@ -255,29 +269,34 @@ function Schedule() {
         style={{
           transition: "opacity",
           transitionDuration: "300",
+          opacity: opacity,
         }}
         id="sched-container"
-        className="common-container">
+        className="common-container"
+      >
         <div
           id="fill-color"
           style={{
             visibility:
               dropVisibility == "visible" ? dropVisibility : visibility,
-          }}></div>
+          }}
+        ></div>
         <div id="popup-box" style={{ visibility: dropVisibility }}>
           <div id="popup-menu">
             <div id="btn-back-container">
-              <Link
+              <button
                 id="create-back"
                 onClick={hideDrop}
                 style={{ width: "fit-content" }}
-                className="btn-back">
+                className="btn-back"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="22"
                   height="24"
                   viewBox="0 0 22 24"
-                  fill="none">
+                  fill="none"
+                >
                   <path
                     d="M0.939341 10.9393C0.353554 11.5251 0.353554 12.4749 0.939341 13.0607L10.4853 22.6066C11.0711 23.1924 12.0208 23.1924 12.6066 22.6066C13.1924 22.0208 13.1924 21.0711 12.6066 20.4853L4.12132 12L12.6066 3.51472C13.1924 2.92893 13.1924 1.97919 12.6066 1.3934C12.0208 0.807611 11.0711 0.807611 10.4853 1.3934L0.939341 10.9393ZM22 10.5L2 10.5V13.5L22 13.5V10.5Z"
                     fill="black"
@@ -287,7 +306,7 @@ function Schedule() {
                 <span style={{ userSelect: "none", cursor: "default" }}>
                   Назад
                 </span>
-              </Link>
+              </button>
               <div id="menu-container">
                 <div id="title">Удалить задачу? </div>
                 <div id="small-text">
@@ -304,17 +323,19 @@ function Schedule() {
         <div id="popup-box" style={{ visibility: visibility }}>
           <div id="popup-menu">
             <div id="btn-back-container">
-              <Link
+              <button
                 id="create-back"
                 onClick={hideMenu}
                 style={{ width: "fit-content" }}
-                className="btn-back">
+                className="btn-back"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="22"
                   height="24"
                   viewBox="0 0 22 24"
-                  fill="none">
+                  fill="none"
+                >
                   <path
                     d="M0.939341 10.9393C0.353554 11.5251 0.353554 12.4749 0.939341 13.0607L10.4853 22.6066C11.0711 23.1924 12.0208 23.1924 12.6066 22.6066C13.1924 22.0208 13.1924 21.0711 12.6066 20.4853L4.12132 12L12.6066 3.51472C13.1924 2.92893 13.1924 1.97919 12.6066 1.3934C12.0208 0.807611 11.0711 0.807611 10.4853 1.3934L0.939341 10.9393ZM22 10.5L2 10.5V13.5L22 13.5V10.5Z"
                     fill="black"
@@ -323,8 +344,8 @@ function Schedule() {
                 <span style={{ userSelect: "none", cursor: "default" }}>
                   Назад
                 </span>
-              </Link>
-              <div id="menu-container">
+              </button>
+              <div id="menu-container" style={{ minHeight: "30vh" }}>
                 <div id="title">Задача</div>
                 <div id="small-text">
                   {menuDay}, {weekdRUFull[menuWeekDay]}
@@ -333,29 +354,31 @@ function Schedule() {
                   <textarea
                     id="taskname-input"
                     ref={inputRef}
-                    maxLength={125}
+                    maxLength={60}
                     placeholder="Название задачи..."
                   />
                 </form>
-                <div id="small-text">Повторять?</div>
-                <div id="line-container">
+                {/* <div id="small-text">Повторять?</div> */}
+                {/* <div id="line-container">
                   <button
                     id="popup-button"
                     onClick={() => {
                       setRepeat(true);
-                    }}>
+                    }}
+                  >
                     Да
                   </button>
                   <button
                     id="popup-button"
                     onClick={() => {
                       setRepeat(false);
-                    }}>
+                    }}
+                  >
                     Нет
                   </button>
-                </div>
-                <div id="small-text">Повтор</div>
-                <div id="line-container">
+                </div> */}
+                {/* <div id="small-text">Повтор</div> */}
+                {/* <div id="line-container">
                   <button id="square-button">ПН</button>
                   <button id="square-button">ВТ</button>
                   <button id="square-button">СР</button>
@@ -363,7 +386,7 @@ function Schedule() {
                   <button id="square-button">ПТ</button>
                   <button id="square-button">СБ</button>
                   <button id="square-button">ВС</button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -374,15 +397,15 @@ function Schedule() {
         <div id="sched-title">
           <h1>Календарь</h1>
         </div>
-        <div id="sched-month">
+        <div id="scroll-top">
           <button id="scroll-button" onClick={sideScrollBack}>
-            -
+            &lt;
           </button>
           <h1>
             {monthsRU[month]} {year}
           </h1>
           <button id="scroll-button" onClick={sideScrollForv}>
-            +
+            &gt;
           </button>
         </div>
         <div id="scrollable-container">

@@ -80,3 +80,45 @@ html {
 .inp-field:placeholder-shown {
   color: var(--neutral-color);
 }
+.clickable{
+  cursor:pointer;
+}
+#screen {
+  justify-content: center;
+  align-items: center;
+}
+
+
+#scrollable-container {
+  overflow-y: auto;
+  height: 100%;
+  max-width: 100%;
+  min-width: 100%;
+}
+
+#scrollable-content {
+  height: 2000px;
+}
+
+#card-title {
+  width: 50%;
+  height: 100%;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  font-size: 12pt;
+}
+
+#task-container {
+  padding: 0;
+}
+
+#scroll-top {
+  display: flex;
+  height: 40px;
+  min-width: 100%;
+  flex-direction: row;
+  border-bottom: 2px solid black;
+
+  align-items: center;
+  justify-content: space-between;
+}

@@ -1,0 +1,38 @@
+
+#circle {
+    width: 15px;
+    height: 15px;
+    background: rgb(0, 0, 0);
+    border-radius: 50%
+  }
+#circle-nofill {
+    width: 15px;
+    height: 15px;
+    border: 2px solid;
+    border-color: rgb(0, 0, 0);
+    border-radius: 50%
+  }
+  #circle-fade {
+    width: 15px;
+    height: 15px;
+    background: rgb(163, 163, 163);
+    border-radius: 50%
+  }
+#circle-nofill-fade{
+    width: 15px;
+    height: 15px;
+    border: 2px solid;
+    border-color: rgb(163, 163, 163);
+    border-radius: 50%
+  }
+.card {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    min-height: 60px;
+  }
+#task-button {
+  margin-bottom: 20px;
+}

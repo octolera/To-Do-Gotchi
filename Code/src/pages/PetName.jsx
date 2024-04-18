@@ -30,11 +30,11 @@ function PetName() {
   });
 
   /**
- * @param {Event} e submit event
- */
+   * @param {Event} e submit event
+   */
   const submitName = async (e) => {
     e.preventDefault();
-    /**@type {string} */
+    const date = new Date();
     const petname = inputRef.current.value;
     if (petname.length == 0 || petname.length > 20) {
       setInvitation(false);
@@ -43,8 +43,11 @@ function PetName() {
     /**@type {string} */
     const pet = await get("_petname");
     if (pet != petname) {
-      await set("_petname", petname);
+      set("_petname", petname);
     }
+    set("_health", 100);
+    set("_keys", []);
+    set("_start", date.toISOString());
     history.replace("/");
     return false;
   };
@@ -56,19 +59,22 @@ function PetName() {
           transitionDuration: "300",
           opacity: opacity,
         }}
-        className="common-container">
+        className="common-container"
+      >
         <div id="petname-btn-back-container">
           <Link
             id="petname-back"
             to="/username"
             style={{ width: "fit-content" }}
-            className="btn-back">
+            className="btn-back"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="22"
               height="24"
               viewBox="0 0 22 24"
-              fill="none">
+              fill="none"
+            >
               <path
                 d="M0.939341 10.9393C0.353554 11.5251 0.353554 12.4749 0.939341 13.0607L10.4853 22.6066C11.0711 23.1924 12.0208 23.1924 12.6066 22.6066C13.1924 22.0208 13.1924 21.0711 12.6066 20.4853L4.12132 12L12.6066 3.51472C13.1924 2.92893 13.1924 1.97919 12.6066 1.3934C12.0208 0.807611 11.0711 0.807611 10.4853 1.3934L0.939341 10.9393ZM22 10.5L2 10.5V13.5L22 13.5V10.5Z"
                 fill="black"
@@ -97,7 +103,8 @@ function PetName() {
             width="204"
             height="64"
             viewBox="0 0 204 64"
-            fill="none">
+            fill="none"
+          >
             <ellipse cx="102" cy="32" rx="102" ry="32" fill="currentColor" />
           </svg>
         </div>
